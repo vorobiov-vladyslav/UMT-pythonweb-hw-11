@@ -1,0 +1,41 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: hw11-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: hw11secret
+      POSTGRES_DB: hw11
+    ports:
+      - "5433:5432"
+    volumes:
+      - hw11-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d hw11"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build: .
+    container_name: hw11-api
+    depends_on:
+      postgres:
+        condition: service_healthy
+    # Secrets (JWT/mail/cloudinary/CORS) come from .env; DATABASE_URL below
+    # overrides the .env value to use the in-network `postgres` host.
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql+psycopg://postgres:hw11secret@postgres:5432/hw11
+    ports:
+      - "8001:8000"
+    volumes:
+      - ./main.py:/app/main.py
+      - ./src:/app/src
+      - ./alembic:/app/alembic
+      - ./alembic.ini:/app/alembic.ini
+    command: ["uv", "run", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+
+volumes:
+  hw11-pgdata:

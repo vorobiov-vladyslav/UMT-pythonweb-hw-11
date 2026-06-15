@@ -1,0 +1,42 @@
+[project]
+name = "umt-pythonweb-hw-11"
+version = "0.1.0"
+description = "REST API for managing personal contacts (FastAPI + SQLAlchemy + Postgres)"
+requires-python = ">=3.10"
+dependencies = [
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.32",
+    "sqlalchemy>=2.0,<3",
+    "psycopg[binary]>=3.1",
+    "alembic>=1.13",
+    "pydantic[email]>=2",
+    "pydantic-settings>=2",
+    "python-jose[cryptography]>=3.5.0",
+    # pwdlib (argon2) — maintained successor to passlib; no version pins needed.
+    "pwdlib[argon2]>=0.2",
+    "fastapi-mail>=1.6.4",
+    "slowapi>=0.1.9",
+    "cloudinary>=1.44.2",
+    "libgravatar>=1.0.4",
+    "python-multipart>=0.0.30",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8",
+    "httpx",
+    "ruff",
+    "pre-commit",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+addopts = "-ra --strict-markers"
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+extend-select = ["I"]
